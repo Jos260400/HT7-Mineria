@@ -8,13 +8,11 @@ df_test['SalePrice']<-df_test2$SalePrice
 set.seed(123)
 library(ggplot2)
 library (dplyr)
-library(naivebayes)
-library(psych)
 
 
 library(caret)
 library(e1071)
-library(klaR)
+
 
 ##limites de var categorica tipo de casa barata/ mediana / cara
 summary(df_train$SalePrice)
@@ -27,14 +25,23 @@ max(df_test$SalePrice)
 (medianoMax)
 baratoMax
 
-## Definicion de variables dicotomicas trainig dataset
-df_train['esBarata']<- ifelse(df_train$SalePrice<baratoMax,1,ifelse(df_train$SalePrice>=baratoMax & df_train$SalePrice<medianoMax,0,0))
-df_train['esMediana']<- ifelse(df_train$SalePrice<baratoMax,0,ifelse(df_train$SalePrice>=baratoMax & df_train$SalePrice<medianoMax,1,0))
-df_train['esCara']<- ifelse(df_train$SalePrice<baratoMax,0,ifelse(df_train$SalePrice>=baratoMax & df_train$SalePrice<medianoMax,0,1))
+df_train['tipoDeCasa']<- ifelse(df_train$SalePrice<baratoMax,"BARATA",ifelse(df_train$SalePrice>=baratoMax & df_train$SalePrice<medianoMax,"MEDIA","CARA"))
+## Usar la variable de clasificacion tipodecasa2 con 1 para barato, 2 para mediano, 3 para caro
+df_train['tipoDeCasa2']<- ifelse(df_train$SalePrice<baratoMax,1,ifelse(df_train$SalePrice>=baratoMax & df_train$SalePrice<medianoMax,2,3))
+str(df_train_filtered)
+df_train_filtered$tipoDeCasa <- as.factor(df_train_filtered$tipoDeCasa)
+df_train_filtered<-df_train[,c(2,19,20,35,45,48,52,71,81,82,83)]
 
-## Definicion de variables dicotomicas testing dataset
-df_test['esBarata']<- ifelse(df_test$SalePrice<baratoMax,1,ifelse(df_test$SalePrice>=baratoMax & df_test$SalePrice<medianoMax,0,0))
-df_test['esMediana']<- ifelse(df_test$SalePrice<baratoMax,0,ifelse(df_test$SalePrice>=baratoMax & df_test$SalePrice<medianoMax,1,0))
-df_test['esCara']<- ifelse(df_test$SalePrice<baratoMax,0,ifelse(df_test$SalePrice>=baratoMax & df_test$SalePrice<medianoMax,0,1))
+modelosvm <- svm(tipoDeCasa~., data = df_train_filtered, type= "C-classification" , kernel = 'linear')
+modelosvm<-svm(tipoDeCasa~. , data = df_train_filtered, scale = T)
 
 
+str(df_train_filtered)
+summary(modelosvm)
+
+modelosvm$index
+
+plot(modelosvm,df_train_filtered , MSSubClass~YearBuilt)
+
+
+modeloSVM_L<-svm(tipoDeCasa~., data=df_train_filtered, cost=2^5, kernel="linear")

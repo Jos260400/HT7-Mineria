@@ -1,5 +1,6 @@
 getwd()
-setwd("~/estudios/mineria de datos/HT7-Mineria")
+setwd("D:/UVG/2022/Semestre 1 2022/Mineria de datos/HDT7")
+#setwd("~/estudios/mineria de datos/HT7-Mineria")
 
 
 df_test <- read.csv("test.csv")
@@ -63,7 +64,7 @@ df_test_filtered$tipoDeCasa <- as.factor(df_test_filtered$tipoDeCasa)
 
 ##modelos
 modelosvm <- svm(tipoDeCasa~., data = df_train_filtered, type= "C-classification" , kernel = 'linear')
-modelosvm<-svm(tipoDeCasa~. , data = df_train_filtered, scale = T)
+#modelosvm<-svm(tipoDeCasa~. , data = df_train_filtered, scale = T)
 
 
 
@@ -76,17 +77,36 @@ modeloSVM_L<-svm(tipoDeCasa~., data=df_train_filtered, cost=2^-5, kernel="linear
 
 modeloSVM_L
 df_test
-modeloSVM_L<-svm(tipoDeCasa~., data=df_train_filtered, cost=2^5, kernel="linear") #98%
-modeloSVM_L<-svm(tipoDeCasa~., data=df_train_filtered, cost=2^-5, kernel="linear") #88%
-modeloSVM_L<-svm(tipoDeCasa~., data=df_train_filtered, cost=0.5, kernel="linear")#95%
-modeloSVM_R<-svm(tipoDeCasa~., data=df_train_filtered, gamma=2^-5, kernel="radial")
-modeloSVM_R<-svm(tipoDeCasa~., data=df_train_filtered, gamma=2^1, kernel="radial")
+##PRueba con modelo 1
+modeloSVM_L<-svm(tipoDeCasa~., data=df_train_filtered, cost=2^5, kernel="linear") #accuracy de 99.09%
 prediccionL<-predict(modeloSVM_L,newdata=df_test_filtered[,1:9])
-prediccionR<-predict(modeloSVM_R,newdata=df_test_filtered)
+confusionMatrix(df_test_filtered$tipoDeCasa[1:875],prediccionL)
+
+
+##prueba con modelo 2
+
+modeloSVM_L<-svm(tipoDeCasa~., data=df_train_filtered, cost=2^-5, kernel="linear") # accuracy de 0.97.83%
+prediccionL<-predict(modeloSVM_L,newdata=df_test_filtered[,1:9])
+confusionMatrix(df_test_filtered$tipoDeCasa[1:875],prediccionL)
+
+##PRueba con modelo 3
+modeloSVM_L<-svm(tipoDeCasa~., data=df_train_filtered, cost=0.5, kernel="linear")# accuracy de 99.31%
+prediccionL<-predict(modeloSVM_L,newdata=df_test_filtered[,1:9])
+confusionMatrix(df_test_filtered$tipoDeCasa[1:875],prediccionL)
+
+#Prueba con modelo 4 
+modeloSVM_R<-svm(tipoDeCasa~., data=df_train_filtered, gamma=2^-5, kernel="radial")
+prediccionR<-predict(modeloSVM_R,newdata=df_test_filtered[,1:9])
+confusionMatrix(df_test_filtered$tipoDeCasa[1:875],prediccionR)
+
+#prueba con modelo 5
+modeloSVM_R<-svm(tipoDeCasa~., data=df_train_filtered, gamma=2^-3, kernel="radial")
+prediccionR<-predict(modeloSVM_R,newdata=df_test_filtered[,1:9])
+confusionMatrix(df_test_filtered$tipoDeCasa[1:875],prediccionR)
 
 #matrix
 str(prediccionL)
-confusionMatrix(df_test_filtered$tipoDeCasa,prediccionL)
+confusionMatrix(df_test_filtered$tipoDeCasa[1:875],prediccionL)
 confusionMatrix(df_test_filtered$tipoDeCasa,prediccionR)
 str(df_test_filtered$tipoDeCasa)
 str(prediccionL)
